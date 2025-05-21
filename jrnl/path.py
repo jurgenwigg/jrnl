@@ -17,12 +17,8 @@ DEFAULT_JOURNAL_NAME = "journal.txt"
 HOME_DIR:Path = Path().home().absolute()
 
 
-def expand_path(path: Path) -> Path:
-    return path.absolute().expanduser()
-
-
-def absolute_path(path: str) -> str:
-    return expand_path(Path(path)).absolute()
+def absolute_path(path: str) -> Path:
+    return Path(path).absolute()
 
 
 def get_default_journal_path() -> str:
