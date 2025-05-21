@@ -1,7 +1,6 @@
-# Copyright © 2012-2023 jrnl contributors
+# Copyright © 2012-2025 jrnl contributors
 # License: https://www.gnu.org/licenses/gpl-3.0.html
 
-import os.path
 from pathlib import Path
 
 import xdg.BaseDirectory
@@ -15,23 +14,20 @@ from jrnl.messages import MsgText
 XDG_RESOURCE = "jrnl"
 DEFAULT_CONFIG_NAME = "jrnl.yaml"
 DEFAULT_JOURNAL_NAME = "journal.txt"
+HOME_DIR:Path = Path().home().absolute()
 
 
-def home_dir() -> str:
-    return os.path.expanduser("~")
-
-
-def expand_path(path: str) -> str:
-    return os.path.expanduser(os.path.expandvars(path))
+def expand_path(path: Path) -> Path:
+    return path.absolute().expanduser()
 
 
 def absolute_path(path: str) -> str:
-    return os.path.abspath(expand_path(path))
+    return expand_path(Path(path)).absolute()
 
 
 def get_default_journal_path() -> str:
-    journal_data_path = xdg.BaseDirectory.save_data_path(XDG_RESOURCE) or home_dir()
-    return os.path.join(journal_data_path, DEFAULT_JOURNAL_NAME)
+    journal_data_path = xdg.BaseDirectory.save_data_path(XDG_RESOURCE) or HOME_DIR
+    return journal_data_path / DEFAULT_JOURNAL_NAME
 
 
 def get_templates_path() -> str:
@@ -44,7 +40,7 @@ def get_templates_path() -> str:
     jrnl_templates_path = jrnl_xdg_resource_path / "templates"
     # Create the directory if needed.
     jrnl_templates_path.mkdir(exist_ok=True)
-    return str(jrnl_templates_path)
+    return jrnl_templates_path.as_posix()
 
 
 def get_config_directory() -> str:
@@ -56,9 +52,8 @@ def get_config_directory() -> str:
                 MsgText.ConfigDirectoryIsFile,
                 MsgStyle.ERROR,
                 {
-                    "config_directory_path": os.path.join(
-                        xdg.BaseDirectory.xdg_config_home, XDG_RESOURCE
-                    )
+                    "config_directory_path": 
+                        xdg.BaseDirectory.xdg_config_home / XDG_RESOURCE
                 },
             ),
         )
@@ -68,5 +63,5 @@ def get_config_path() -> str:
     try:
         config_directory_path = get_config_directory()
     except JrnlException:
-        return os.path.join(home_dir(), DEFAULT_CONFIG_NAME)
+        return HOME_DIR / DEFAULT_CONFIG_NAME
     return os.path.join(config_directory_path, DEFAULT_CONFIG_NAME)
