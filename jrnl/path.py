@@ -48,7 +48,7 @@ def get_config_directory() -> str:
                 MsgText.ConfigDirectoryIsFile,
                 MsgStyle.ERROR,
                 {
-                    "config_directory_path": 
+                    "config_directory_path":
                         xdg.BaseDirectory.xdg_config_home / XDG_RESOURCE
                 },
             ),
@@ -60,4 +60,4 @@ def get_config_path() -> str:
         config_directory_path = get_config_directory()
     except JrnlException:
         return HOME_DIR / DEFAULT_CONFIG_NAME
-    return os.path.join(config_directory_path, DEFAULT_CONFIG_NAME)
+    return config_directory_path / DEFAULT_CONFIG_NAME
